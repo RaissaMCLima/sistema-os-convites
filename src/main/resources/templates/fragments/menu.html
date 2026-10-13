@@ -1,0 +1,14 @@
+<nav class="menu" th:fragment="menu" xmlns:th="http://www.thymeleaf.org">
+    <div class="marca">Decoração<br>Convites &amp; Artes</div>
+
+    <div class="grupo">Operação</div>
+    <a th:href="@{/os}" th:classappend="${uriAtual.startsWith('/os')} ? 'ativo'">Ordens de Serviço</a>
+
+    <div class="grupo">Financeiro</div>
+    <a th:href="@{/financeiro}" th:classappend="${uriAtual.startsWith('/financeiro')} ? 'ativo'">Resumo do mês</a>
+    <a th:href="@{/despesas}" th:classappend="${uriAtual.startsWith('/despesas')} ? 'ativo'">Despesas</a>
+
+    <div class="grupo">Em breve</div>
+    <span class="breve">Clientes</span>
+    <span class="breve">Catálogo</span>
+</nav>

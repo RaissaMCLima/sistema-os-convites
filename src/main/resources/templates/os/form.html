@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OS</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<div th:replace="~{fragments/menu :: menu}"></div>
+<header>
+    <h1 th:text="${os.id == null} ? 'Nova OS' : ('Editar OS nº ' + ${os.id})"></h1>
+    <a class="botao cinza" th:href="@{/os}">Cancelar</a>
+</header>
+<main>
+    <form th:action="@{/os}" th:object="${os}" method="post">
+
+        <input type="hidden" th:field="*{id}">
+        <input type="hidden" th:field="*{dataEntrada}">
+
+        <label>Cliente *
+            <input type="text" th:field="*{clienteNome}">
+            <span class="erro" th:if="${#fields.hasErrors('clienteNome')}" th:errors="*{clienteNome}"></span>
+        </label>
+
+        <label>WhatsApp
+            <input type="text" th:field="*{clienteWhatsapp}">
+        </label>
+
+        <label>E-mail
+            <input type="email" th:field="*{clienteEmail}">
+        </label>
+
+        <label>Tema do convite *
+            <input type="text" th:field="*{tema}">
+            <span class="erro" th:if="${#fields.hasErrors('tema')}" th:errors="*{tema}"></span>
+        </label>
+
+        <label>Formato
+            <select th:field="*{formato}">
+                <option th:each="f : ${formatos}" th:value="${f}" th:text="${f.rotulo}"></option>
+            </select>
+        </label>
+
+        <label>Valor (R$) *
+            <input type="number" step="0.01" th:field="*{valor}">
+            <span class="erro" th:if="${#fields.hasErrors('valor')}" th:errors="*{valor}"></span>
+        </label>
+
+        <label>Status
+            <select th:field="*{status}">
+                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s.rotulo}"></option>
+            </select>
+        </label>
+
+        <label>Prazo de entrega (data e horário) *
+            <input type="datetime-local" th:field="*{prazoEntrega}">
+            <span class="erro" th:if="${#fields.hasErrors('prazoEntrega')}" th:errors="*{prazoEntrega}"></span>
+        </label>
+
+        <label>Textos do convite
+            <textarea rows="4" th:field="*{textoConvite}"></textarea>
+        </label>
+
+        <label>Link do Maps
+            <input type="text" th:field="*{linkMaps}">
+        </label>
+
+        <label>Número para confirmação de presença
+            <input type="text" th:field="*{numeroConfirmacao}">
+        </label>
+
+        <label>E-mail para confirmação de presença
+            <input type="email" th:field="*{emailConfirmacao}">
+        </label>
+
+        <label>Observações
+            <textarea rows="3" th:field="*{observacoes}"></textarea>
+        </label>
+
+        <button type="submit" class="botao">Salvar</button>
+    </form>
+</main>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Despesas</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<div th:replace="~{fragments/menu :: menu}"></div>
+<header>
+    <h1>Despesas · <span th:text="${nomeMes}"></span></h1>
+    <span class="seletor-mes">
+        <a class="botao cinza" th:href="@{/despesas(mes=${mesAnterior})}">&lt; Mês anterior</a>
+        <a class="botao cinza" th:href="@{/despesas(mes=${proximoMes})}">Próximo mês &gt;</a>
+        <a class="botao" th:href="@{/despesas/nova}">+ Nova despesa</a>
+    </span>
+</header>
+<main>
+
+    <div class="cartao">
+        <p><b>Total de despesas no mês:</b>
+            <span class="vermelho">R$ <span th:text="${#numbers.formatDecimal(total, 1, 'POINT', 2, 'COMMA')}"></span></span></p>
+    </div>
+
+    <p th:if="${#lists.isEmpty(despesas)}">Nenhuma despesa neste mês. Clique em "+ Nova despesa" para começar.</p>
+    <table th:unless="${#lists.isEmpty(despesas)}">
+        <thead>
+        <tr>
+            <th>Data</th><th>Descrição</th><th>Categoria</th><th>Tipo</th>
+            <th>Forma</th><th>Valor</th><th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="d : ${despesas}">
+            <td th:text="${#temporals.format(d.dataDespesa, 'dd/MM/yyyy')}"></td>
+            <td th:text="${d.descricao}"></td>
+            <td class="laranja" th:text="${d.categoria.rotulo}"></td>
+            <td th:text="${d.fixa} ? 'Fixa' : 'Variável'"></td>
+            <td th:text="${d.forma.rotulo}"></td>
+            <td class="vermelho">R$ <span th:text="${#numbers.formatDecimal(d.valor, 1, 'POINT', 2, 'COMMA')}"></span></td>
+            <td>
+                <a th:href="@{/despesas/{id}/editar(id=${d.id})}">Editar</a>
+                <form style="display:inline" th:action="@{/despesas/{id}/excluir(id=${d.id})}" method="post"
+                      onsubmit="return confirm('Excluir esta despesa?')">
+                    <button type="submit" class="botao cinza">Excluir</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</main>
+</body>
+</html>

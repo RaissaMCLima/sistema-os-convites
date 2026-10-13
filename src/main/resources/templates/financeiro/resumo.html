@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Financeiro</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<div th:replace="~{fragments/menu :: menu}"></div>
+<header>
+    <h1>Financeiro · <span th:text="${nomeMes}"></span></h1>
+    <span class="seletor-mes">
+        <a class="botao cinza" th:href="@{/financeiro(mes=${mesAnterior})}">&lt; Mês anterior</a>
+        <a class="botao cinza" th:href="@{/financeiro(mes=${proximoMes})}">Próximo mês &gt;</a>
+        <a class="botao" th:href="@{/despesas/nova}">+ Nova despesa</a>
+    </span>
+</header>
+<main>
+
+    <div class="kpis">
+        <div class="kpi">
+            <span class="rotulo">Entradas</span>
+            <strong class="verde">R$ <span th:text="${#numbers.formatDecimal(entradas, 1, 'POINT', 2, 'COMMA')}"></span></strong>
+        </div>
+        <div class="kpi">
+            <span class="rotulo">Saídas</span>
+            <strong class="vermelho">R$ <span th:text="${#numbers.formatDecimal(saidas, 1, 'POINT', 2, 'COMMA')}"></span></strong>
+        </div>
+        <div class="kpi">
+            <span class="rotulo">Saldo do mês</span>
+            <strong th:classappend="${saldo.signum() >= 0} ? 'azul' : 'vermelho'">R$ <span th:text="${#numbers.formatDecimal(saldo, 1, 'POINT', 2, 'COMMA')}"></span></strong>
+        </div>
+        <div class="kpi">
+            <span class="rotulo">A receber (total)</span>
+            <strong class="amarelo">R$ <span th:text="${#numbers.formatDecimal(aReceber, 1, 'POINT', 2, 'COMMA')}"></span></strong>
+        </div>
+        <div class="kpi">
+            <span class="rotulo">Faturado (pedidos do mês)</span>
+            <strong class="roxo">R$ <span th:text="${#numbers.formatDecimal(faturado, 1, 'POINT', 2, 'COMMA')}"></span></strong>
+        </div>
+        <div class="kpi">
+            <span class="rotulo">Pedidos no mês</span>
+            <strong class="laranja" th:text="${pedidos}"></strong>
+        </div>
+        <div class="kpi">
+            <span class="rotulo">Ticket médio</span>
+            <strong class="azul">R$ <span th:text="${#numbers.formatDecimal(ticketMedio, 1, 'POINT', 2, 'COMMA')}"></span></strong>
+        </div>
+    </div>
+
+    <div class="cartao">
+        <p><b>Entradas x Saídas</b></p>
+        <p>Entradas</p>
+        <div class="barra"><div class="verde-bg" th:style="'width:' + ${percEntradas} + '%'"></div></div>
+        <p>Saídas</p>
+        <div class="barra"><div class="vermelho-bg" th:style="'width:' + ${percSaidas} + '%'"></div></div>
+        <p>Saldo do mês anterior: R$ <span th:text="${#numbers.formatDecimal(saldoAnterior, 1, 'POINT', 2, 'COMMA')}"></span></p>
+    </div>
+
+    <div class="cartao">
+        <p><b>Despesas por categoria</b></p>
+        <p th:if="${#maps.isEmpty(categorias)}">Nenhuma despesa neste mês.</p>
+        <div th:each="c : ${categorias}">
+            <p>
+                <span th:text="${c.key}"></span> –
+                R$ <span th:text="${#numbers.formatDecimal(c.value, 1, 'POINT', 2, 'COMMA')}"></span>
+                (<span th:text="${percentuais[c.key]}"></span>%)
+            </p>
+            <div class="barra"><div class="laranja-bg" th:style="'width:' + ${percentuais[c.key]} + '%'"></div></div>
+        </div>
+    </div>
+
+    <div class="cartao">
+        <p><b>Pagamentos recebidos no mês</b></p>
+        <p th:if="${#lists.isEmpty(pagamentos)}">Nenhum pagamento registrado neste mês.</p>
+        <table th:unless="${#lists.isEmpty(pagamentos)}">
+            <thead>
+            <tr><th>Data</th><th>OS</th><th>Cliente</th><th>Forma</th><th>Valor</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${pagamentos}">
+                <td th:text="${#temporals.format(p.dataPagamento, 'dd/MM/yyyy')}"></td>
+                <td><a th:href="@{/os/{id}(id=${p.ordemServico.id})}" th:text="'#' + ${p.ordemServico.id}"></a></td>
+                <td th:text="${p.ordemServico.clienteNome}"></td>
+                <td th:text="${p.forma.rotulo}"></td>
+                <td class="verde">R$ <span th:text="${#numbers.formatDecimal(p.valor, 1, 'POINT', 2, 'COMMA')}"></span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+</body>
+</html>

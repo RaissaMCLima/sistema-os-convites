@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Despesa</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<div th:replace="~{fragments/menu :: menu}"></div>
+<header>
+    <h1 th:text="${despesa.id == null} ? 'Nova despesa' : 'Editar despesa'"></h1>
+    <a class="botao cinza" th:href="@{/despesas}">Cancelar</a>
+</header>
+<main>
+    <form th:action="@{/despesas}" th:object="${despesa}" method="post">
+
+        <input type="hidden" th:field="*{id}">
+
+        <label>Data *
+            <input type="date" th:field="*{dataDespesa}">
+            <span class="erro" th:if="${#fields.hasErrors('dataDespesa')}" th:errors="*{dataDespesa}"></span>
+        </label>
+
+        <label>Descrição *
+            <input type="text" th:field="*{descricao}">
+            <span class="erro" th:if="${#fields.hasErrors('descricao')}" th:errors="*{descricao}"></span>
+        </label>
+
+        <label>Categoria
+            <select th:field="*{categoria}">
+                <option th:each="c : ${categorias}" th:value="${c}" th:text="${c.rotulo}"></option>
+            </select>
+        </label>
+
+        <label>Valor (R$) *
+            <input type="number" step="0.01" th:field="*{valor}">
+            <span class="erro" th:if="${#fields.hasErrors('valor')}" th:errors="*{valor}"></span>
+        </label>
+
+        <label>Forma de pagamento
+            <select th:field="*{forma}">
+                <option th:each="f : ${formas}" th:value="${f}" th:text="${f.rotulo}"></option>
+            </select>
+        </label>
+
+        <label>
+            <input type="checkbox" th:field="*{fixa}"> Despesa fixa (repete todo mês)
+        </label>
+
+        <label>Observação
+            <input type="text" th:field="*{observacao}">
+        </label>
+
+        <button type="submit" class="botao">Salvar</button>
+    </form>
+</main>
+</body>
+</html>

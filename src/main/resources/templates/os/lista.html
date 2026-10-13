@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ordens de Serviço</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<div th:replace="~{fragments/menu :: menu}"></div>
+<header>
+    <h1>Ordens de Serviço</h1>
+    <a class="botao" th:href="@{/os/nova}">+ Nova OS</a>
+</header>
+<main>
+    <p th:if="${#lists.isEmpty(ordens)}">Nenhuma OS em aberto. Clique em "+ Nova OS" para começar.</p>
+    <table th:unless="${#lists.isEmpty(ordens)}">
+        <thead>
+        <tr>
+            <th>Nº</th><th>Cliente</th><th>Tema</th><th>Entrada</th>
+            <th>Prazo</th><th>Falta</th><th>Status</th><th>Pagamento</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="o : ${ordens}">
+            <td th:text="${o.id}"></td>
+            <td><a th:href="@{/os/{id}(id=${o.id})}" th:text="${o.clienteNome}"></a></td>
+            <td th:text="${o.tema}"></td>
+            <td th:text="${#temporals.format(o.dataEntrada, 'dd/MM HH:mm')}"></td>
+            <td th:text="${#temporals.format(o.prazoEntrega, 'dd/MM HH:mm')}"></td>
+            <td th:text="${o.tempoRestante}"
+                th:classappend="${o.atrasada} ? 'atrasado' : (${o.urgente} ? 'urgente' : '')"></td>
+            <td th:text="${o.status.rotulo}"></td>
+            <td th:text="${o.statusPagamento.rotulo}"></td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

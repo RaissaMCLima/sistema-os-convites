@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OS</title>
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+<div th:replace="~{fragments/menu :: menu}"></div>
+<header>
+    <h1 th:text="'OS nº ' + ${os.id}"></h1>
+    <span>
+        <a class="botao" th:href="@{/os/{id}/editar(id=${os.id})}">Editar</a>
+        <a class="botao cinza" th:href="@{/os}">Voltar</a>
+    </span>
+</header>
+<main>
+
+    <div class="cartao">
+        <p><b>Cliente:</b> <span th:text="${os.clienteNome}"></span></p>
+        <p><b>WhatsApp:</b> <span th:text="${os.clienteWhatsapp}"></span></p>
+        <p><b>E-mail:</b> <span th:text="${os.clienteEmail}"></span></p>
+        <p><b>Tema:</b> <span th:text="${os.tema}"></span></p>
+        <p><b>Formato:</b> <span th:text="${os.formato.rotulo}"></span></p>
+        <p><b>Entrada:</b> <span th:text="${#temporals.format(os.dataEntrada, 'dd/MM/yyyy HH:mm')}"></span></p>
+        <p><b>Prazo:</b> <span th:text="${#temporals.format(os.prazoEntrega, 'dd/MM/yyyy HH:mm')}"></span>
+            (<span th:text="${os.tempoRestante}"></span>)</p>
+    </div>
+
+    <div class="cartao">
+        <p><b>Textos do convite:</b></p>
+        <p th:text="${os.textoConvite}" style="white-space: pre-line;"></p>
+        <p><b>Confirmação de presença (número):</b> <span th:text="${os.numeroConfirmacao}"></span></p>
+        <p><b>Confirmação de presença (e-mail):</b> <span th:text="${os.emailConfirmacao}"></span></p>
+        <p th:if="${os.linkMaps != null and !#strings.isEmpty(os.linkMaps)}">
+            <a th:href="${os.linkMaps}" target="_blank">Abrir local no Maps</a>
+        </p>
+        <p><b>Observações:</b> <span th:text="${os.observacoes}"></span></p>
+    </div>
+
+    <div class="cartao">
+        <p><b>Modelo escolhido e fotos do cliente:</b> aparecem aqui quando fizermos o upload de imagens.</p>
+    </div>
+
+    <div class="cartao">
+        <p><b>Pagamentos</b> – <span th:text="${os.statusPagamento.rotulo}"></span></p>
+        <p>Valor da OS: R$ <span th:text="${#numbers.formatDecimal(os.valor, 1, 'POINT', 2, 'COMMA')}"></span>
+            · Pago: R$ <span th:text="${#numbers.formatDecimal(os.totalPago, 1, 'POINT', 2, 'COMMA')}"></span>
+            · A receber: R$ <span th:text="${#numbers.formatDecimal(os.saldoAReceber, 1, 'POINT', 2, 'COMMA')}"></span></p>
+
+        <table th:if="${!#lists.isEmpty(os.pagamentos)}">
+            <thead>
+            <tr><th>Data</th><th>Forma</th><th>Valor</th><th>Obs.</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${os.pagamentos}">
+                <td th:text="${#temporals.format(p.dataPagamento, 'dd/MM/yyyy')}"></td>
+                <td th:text="${p.forma.rotulo}"></td>
+                <td>R$ <span th:text="${#numbers.formatDecimal(p.valor, 1, 'POINT', 2, 'COMMA')}"></span></td>
+                <td th:text="${p.observacao}"></td>
+                <td>
+                    <form th:action="@{/pagamentos/{pid}/excluir(pid=${p.id})}" method="post"
+                          onsubmit="return confirm('Excluir este pagamento?')">
+                        <button type="submit" class="botao cinza">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <form th:if="${os.saldoAReceber.signum() > 0}"
+              th:action="@{/os/{id}/pagamentos(id=${os.id})}" method="post">
+            <label>Valor recebido (R$)
+                <input type="number" step="0.01" min="0.01" name="valor" th:value="${os.saldoAReceber}" required>
+            </label>
+            <label>Data do recebimento
+                <input type="date" name="data" th:value="${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}" required>
+            </label>
+            <label>Forma
+                <select name="forma">
+                    <option th:each="f : ${formas}" th:value="${f}" th:text="${f.rotulo}"></option>
+                </select>
+            </label>
+            <label>Observação
+                <input type="text" name="observacao">
+            </label>
+            <button type="submit" class="botao">Registrar pagamento</button>
+        </form>
+        <p th:unless="${os.saldoAReceber.signum() > 0}">Esta OS está paga por completo.</p>
+    </div>
+
+    <div class="cartao">
+        <form th:action="@{/os/{id}/status(id=${os.id})}" method="post">
+            <label>Status da OS
+                <select name="status">
+                    <option th:each="s : ${statuses}" th:value="${s}" th:text="${s.rotulo}"
+                            th:selected="${s == os.status}"></option>
+                </select>
+            </label>
+            <button type="submit" class="botao">Atualizar status</button>
+        </form>
+    </div>
+
+</main>
+</body>
+</html>
